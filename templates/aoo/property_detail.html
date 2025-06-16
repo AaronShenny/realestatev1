@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{{ property.title }} - Property Details</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: #f8f9fa;
+      color: #333;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .title-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .title {
+      font-size: 2em;
+      font-weight: bold;
+    }
+
+    .enquire-btn {
+      background-color: #2e86de;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-size: 1em;
+      font-weight: 500;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      transition: background-color 0.3s;
+      white-space: nowrap;
+    }
+
+    .enquire-btn:hover {
+      background-color: #1e5fa4;
+    }
+
+    .location {
+      font-size: 1.1em;
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .gallery {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      margin-bottom: 20px;
+    }
+
+    .gallery img {
+      border-radius: 8px;
+      height: 220px;
+      object-fit: cover;
+    }
+
+    .section {
+      margin: 20px 0;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      background: #f1f3f5;
+    }
+
+    .info-item i {
+      color: #2e86de;
+      min-width: 20px;
+    }
+
+    .price {
+      font-size: 1.5em;
+      color: #27ae60;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .desc {
+      line-height: 1.6;
+      color: #444;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #d1ecf1;
+      color: #0c5460;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.9em;
+      margin: 5px 5px 0 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="title-bar">
+      <div class="title">{{ property.title }}</div>
+      <a href="tel:+917907049400" class="enquire-btn">
+        <i class="fas fa-phone-alt"></i> Enquire Now
+      </a>
+    </div>
+    
+    <div class="location"><i class="fas fa-map-marker-alt"></i> {{ property.address }}</div>
+    
+    {% if property.sale_type == 'rent' %}
+      <div class="price"><i class="fas fa-tags"></i> Rent: ₹ {{ property.price }} / month</div>
+    {% else %}
+      <div class="price"><i class="fas fa-tags"></i> Sale: ₹ {{ property.price  }}</div>
+    {% endif %}
+    
+    <!-- Gallery -->
+    <div class="gallery">
+      {% for img in property.images.all %}
+        <img src="https://lh3.googleusercontent.com/d/{{ img.image_id }}" alt="Property Image">
+      {% empty %}
+        <img src="https://via.placeholder.com/400x220?text=No+Images" alt="No image">
+      {% endfor %}
+    </div>
+
+    <!-- Description -->
+    <div class="section desc">
+      {{ property.description }}
+    </div>
+
+    <!-- Property Info -->
+    <div class="section info-grid">
+      <div class="info-item"><i class="fas fa-ruler-combined"></i> {{ property.build_area }} sq.ft Build Area</div>
+      {% if property.plot_area %}
+        <div class="info-item"><i class="fas fa-vector-square"></i> {{ property.plot_area }} sq.ft Plot Area</div>
+      {% else %}
+        <div class="info-item"><i class="fas fa-vector-square"></i> Not specified</div>
+      {% endif %}
+      <div class="info-item"><i class="fas fa-vector-square"></i> {{ property.plot_area }} sq.ft Plot Area</div>
+      <div class="info-item"><i class="fas fa-bed"></i> {{ property.bedrooms }} Bedrooms</div>
+      <div class="info-item"><i class="fas fa-bath"></i> {{ property.bathrooms }} Bathrooms</div>
+      <div class="info-item"><i class="fas fa-car"></i> {{ property.parking_no }} Parking Spaces</div>
+      <div class="info-item"><i class="fas fa-tree"></i> {{ property.balcony_no }} Balconies</div>
+      <div class="info-item"><i class="fas fa-home"></i> {{ property.property_type|title }}</div>
+      <div class="info-item"><i class="fas fa-clock"></i> {{ property.age_of_property }} years old</div>
+      <div class="info-item"><i class="fas fa-tags"></i> {{ property.sale_type|title }}</div>
+    </div>
+
+    <!-- Amenities -->
+    <div class="section">
+      <strong>Amenities:</strong><br>
+      {% for amenity in property.amenities %}
+        <span class="badge">{{ amenity|title }}</span>
+      {% empty %}
+        <p>No amenities listed.</p>
+      {% endfor %}
+    </div>
+
+    <div class="section" style="color: #999; font-size: 0.85em;">
+      Listed on: {{ property.created_at|date:"F j, Y" }}
+    </div>
+  </div>
+</body>
+</html>
