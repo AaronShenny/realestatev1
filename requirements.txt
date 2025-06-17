@@ -1,3 +1,4 @@
 django-multiselectfield
 django_mongodb_backend
 django
+whitenoise
