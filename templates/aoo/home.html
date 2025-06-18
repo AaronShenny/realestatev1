@@ -204,14 +204,14 @@
                 <select name="location">
                     <option value="">All Districts</option>
                     {% for district in districts %}
-                    <option value="{{ district }}" {% if district==selected_location %}selected{% endif %}>{{ district }}</option>
+                    <option value="{{ district }}" >{{ district }}</option>
                     {% endfor %}
                 </select>
             
                 <select name="filter_type">
                     <option value="">Sale/Rent</option>
-                    <option value="sale" {% if selected_type=="sale" %}selected{% endif %}>For Sale</option>
-                    <option value="rent" {% if selected_type=="rent" %}selected{% endif %}>For Rent</option>
+                    <option value="sale" >For Sale</option>
+                    <option value="rent" >For Rent</option>
                 </select>
 
                 <button type="submit" class="btn-filter">Filter</button>
