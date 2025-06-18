@@ -37,6 +37,7 @@ class Property(models.Model):
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     location = models.CharField(max_length=100)
+    district = models.CharField(max_length=100, blank=True, null=True,default='Unknown')
     address = models.CharField(max_length=255)
     bathrooms = models.IntegerField()
     age_of_property = models.IntegerField(help_text="Age of the property in years")
@@ -48,6 +49,7 @@ class Property(models.Model):
     build_area = models.DecimalField(max_digits=10, decimal_places=2, help_text="Area in square feet")
     plot_area = models.DecimalField(max_digits=10, decimal_places=2, help_text="Plot area in square feet")
     amenities = MultiSelectField(choices=AMENITY_CHOICES, blank=True, null=True)
+    flat = models.ForeignKey('Flat', related_name='properties', on_delete=models.CASCADE, null=True, blank=True)
     balcony_no = models.IntegerField(default=0, help_text="Number of balconies")
     parking_no = models.IntegerField(default=0, help_text="Number of parking spaces")
     property_type = models.CharField(max_length=50, choices=[
@@ -73,3 +75,19 @@ class PropertyImage(models.Model):
 
     def __str__(self):
         return f"Image for {self.property.id}"
+
+
+
+class Flat(models.Model):
+    id =models.CharField(
+        max_length=5,
+        unique=True,
+        primary_key=True,
+        editable=False,
+        default=generate_unique_id
+    )
+    flatname = models.CharField(max_length=200)
+    description = models.TextField()
+    district = models.CharField(max_length=100, blank=True, null=True,default='Unknown')
+    address = models.CharField(max_length=255)
+    amenties = MultiSelectField(choices=AMENITY_CHOICES, blank=True, null=True)

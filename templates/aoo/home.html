@@ -32,6 +32,55 @@
             padding: 20px;
         }
 
+        .filter-box {
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            max-width: 800px;
+            margin: auto;
+            margin-bottom: 40px;
+        }
+
+        .filter-box form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .filter-box input[type="text"],
+        .filter-box select {
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 1em;
+            width: 200px;
+            transition: border 0.2s;
+        }
+
+        .filter-box input:focus,
+        .filter-box select:focus {
+            outline: none;
+            border-color: #2e8b57;
+        }
+
+        .btn-filter {
+            padding: 10px 20px;
+            background-color: #2e8b57;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-filter:hover {
+            background-color: #246e46;
+        }
+
         h1 {
             text-align: center;
             margin-bottom: 40px;
@@ -46,10 +95,10 @@
 
         .card {
             background: white;
-            border-radius: 10px;
+            border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             overflow: hidden;
-            width: 300px;
+            width: 340px;
             display: flex;
             flex-direction: column;
             transition: transform 0.2s ease;
@@ -73,14 +122,21 @@
         }
 
         .card-title {
-            font-size: 1.1em;
+            font-size: 1.2em;
             font-weight: bold;
             margin-bottom: 6px;
+            color: #333;
         }
 
         .card-desc {
             font-size: 0.95em;
             color: #555;
+            margin-bottom: 4px;
+        }
+
+        .card-district {
+            font-size: 0.9em;
+            color: #777;
             margin-bottom: 10px;
         }
 
@@ -143,32 +199,53 @@
     </div>
 
     <div class="container">
+        <div class="filter-box">
+            <form method="get" action="{% url 'property_filter_location' %}">
+                <select name="location">
+                    <option value="">All Districts</option>
+                    {% for district in districts %}
+                    <option value="{{ district }}" {% if district==selected_location %}selected{% endif %}>{{ district }}</option>
+                    {% endfor %}
+                </select>
+            
+                <select name="filter_type">
+                    <option value="">Sale/Rent</option>
+                    <option value="sale" {% if selected_type=="sale" %}selected{% endif %}>For Sale</option>
+                    <option value="rent" {% if selected_type=="rent" %}selected{% endif %}>For Rent</option>
+                </select>
+
+                <button type="submit" class="btn-filter">Filter</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="container">
         <h1>Available Properties</h1>
         <div class="properties">
             {% for property in properties %}
-	<a href='property/{{ property.id }}' >
-            <div class="card">
-                {% if property.image.image_id %}
-                <img src="https://lh3.googleusercontent.com/d/{{property.image.image_id}}" alt="Property Image">
-                {% else %}
-                <img src="https://via.placeholder.com/300x200?text=No+Image" alt="No Image Available">
-                {% endif %}
+            <a href="{% url 'property_detail' property.id %}">
+                <div class="card">
+                    {% if property.image.image_id %}
+                        <img src="https://lh3.googleusercontent.com/d/{{ property.image.image_id }}" alt="Property Image">
+                    {% else %}
+                        <img src="https://via.placeholder.com/340x200?text=No+Image" alt="No Image Available">
+                    {% endif %}
 
-                <div class="card-body">
-                    <div class="card-title">{{ property.title }}</div>
-                    <div class="card-desc">{{ property.description|truncatewords:20 }}</div>
-                    <div class="card-info">
-                        <span class="price">₹{{ property.price }}</span>
-                        <span class="type">{{ property.get_sale_type_display }}</span>
-                    </div>
-                    <div class="card-actions">
-                        <a href="tel:+917907049400" class="btn btn-call">Enquire Now</a>
-                        <a href="https://wa.me/+917907049400?text='I am interested in ' {{property.title}} [ {{ property.id }} ] " class="btn btn-whatsapp">WhatsApp</a>
-
+                    <div class="card-body">
+                        <div class="card-title">{{ property.title }}</div>
+                        <div class="card-desc">{{ property.description|truncatewords:20 }}</div>
+                        <div class="card-district">{{ property.district }}</div>
+                        <div class="card-info">
+                            <span class="price">₹{{ property.price }}</span>
+                            <span class="type">{{ property.get_sale_type_display }}</span>
+                        </div>
+                        <div class="card-actions">
+                            <a href="tel:+917907049400" class="btn btn-call">Call</a>
+                            <a href="https://wa.me/+917907049400?text=I'm interested in {{ property.title }} [{{ property.id }}]" class="btn btn-whatsapp">WhatsApp</a>
+                        </div>
                     </div>
                 </div>
-            </div>
-</a>
+            </a>
             {% endfor %}
         </div>
     </div>
