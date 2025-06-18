@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Filtered Properties</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            padding-top: 60px;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: #2e8b57;
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .properties {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            overflow: hidden;
+            width: 300px;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .card-body {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .card-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .card-desc {
+            font-size: 0.95em;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .card-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .price {
+            font-weight: bold;
+            color: #2e8b57;
+        }
+
+        .type {
+            font-size: 0.85em;
+            background: #e0e7ff;
+            color: #3b3b8f;
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+
+        .card-actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            text-align: center;
+            padding: 10px 0;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.9em;
+            color: white;
+            cursor: pointer;
+        }
+
+        .btn-call {
+            background-color: #007bff;
+        }
+
+        .btn-whatsapp {
+            background-color: #25d366;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .filter-form {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        .filter-form input,
+        .filter-form select {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 1em;
+        }
+
+        .filter-form .btn-call {
+            padding: 8px 24px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        My Real Estate
+    </div>
+
+    <div class="container">
+        <form method="get" action="{% url 'property_filter_location' %}" class="filter-form">
+            <select name="location">
+                <option value="">All Districts</option>
+                {% for district in districts %}
+                <option value="{{ district }}" {% if district is selected_location %}selected{% endif %}>{{ district }}</option>
+                {% endfor %}
+            </select>
+        
+            <select name="filter_type">
+                <option value="">Sale/Rent</option>
+                <option value="sale" {% if selected_type == "sale" %}selected{% endif %}>For Sale</option>
+                <option value="rent" {% if selected_type == "rent" %}selected{% endif %}>For Rent</option>
+            </select>
+
+            <button type="submit" class="btn btn-call">Filter</button>
+        </form>
+
+        <h1>Filtered Properties</h1>
+        <div class="properties">
+            {% for property in properties %}
+            <a href="{% url 'property_detail' property.id %}">
+                <div class="card">
+                    {% if property.image.image_id %}
+                        <img src="https://lh3.googleusercontent.com/d/{{ property.image.image_id }}" alt="Property Image">
+                    {% else %}
+                        <img src="https://via.placeholder.com/300x200?text=No+Image" alt="No Image Available">
+                    {% endif %}
+                    <div class="card-body">
+                        <div class="card-title">{{ property.title }}</div>
+                        <div class="card-desc">{{ property.description|truncatewords:20 }}</div>
+                        <div class="card-info">
+                            <span class="price">₹{{ property.price }}</span>
+                            <span class="type">{{ property.get_sale_type_display }}</span>
+                        </div>
+                        <div class="card-info">
+                            <span style="font-size: 0.85em; color: #777;">District: {{ property.district }}</span>
+                        </div>
+                        <div class="card-actions">
+                            <a href="tel:+917907049400" class="btn btn-call">Enquire Now</a>
+                            <a href="https://wa.me/+917907049400?text=I am interested in {{ property.title }} [{{ property.id }}]" class="btn btn-whatsapp">WhatsApp</a>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+
+        {% if not properties %}
+            <p style="text-align:center; margin-top: 40px;">No properties match your criteria.</p>
+        {% endif %}
+    </div>
+
+</body>
+</html>
